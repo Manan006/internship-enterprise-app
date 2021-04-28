@@ -1,5 +1,6 @@
 from internalapi.response import Response
 from internalapi.db import Cursor
+from internalapi.users import user
 class cache:
     def set(namespace, key, value):
         prepare=f"INSERT INTO `cache` (`namespace`,`key`,`value`) VALUES ('{namespace}','{key}','{value}');"
@@ -13,8 +14,9 @@ class cache:
         print(len(value))
         if len(value)<1:
             return Response(202)
-        else:
-            return Response(100,value[0][0])
+        value=value[0][0]
+        user.fetch(value).content
+        return Response(100,value)
     def remove(namespace, key):
         prepare=f"DELETE FROM `cache` WHERE `namespace`='{namespace}' AND `key`='{key}';"
         Cursor.execute(prepare)
