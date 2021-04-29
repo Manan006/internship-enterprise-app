@@ -5,7 +5,10 @@ from internalapi.users import user
 from internalapi.response import Response
 class session:
     def get(id):
-        return cache.get("sessions",id)
+        id=cache.get("sessions",id)
+        if not id.success:
+            return id
+        return user.fetch(id.content)
     def set(employ:user.userObject):
         while True:
             session_id=methods.generateRandom(32)
@@ -19,4 +22,11 @@ class session:
         employ.edit(attr="sessions",value=sessions)
         return Response(100,session_id)
     def remove(id):
-        return cache.removes("sessions",id)
+        employ=session.get(id)
+        if not employ.success:
+            return Response(202)
+        cache.remove("sessions",id)
+        employ=employ.content
+        sessions=employ.sessions
+        sessions.remove(session_id)
+        employ.edit(attr="sessions",value=sessions)

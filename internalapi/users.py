@@ -2,6 +2,8 @@ from internalapi.methods import methods
 from internalapi.cache import cache
 from internalapi.response import Response
 from internalapi.db import Cursor
+from internalapi.db import db
+from  internalapi import communication
 from passlib.hash import pbkdf2_sha256 as hashing_algorithm
 import datetime
 class user:
@@ -28,8 +30,17 @@ class user:
                 return Response(200,exception)
             else:
                 return (100)
+        def is_admin(self):
+            if self.adminstration>0:
+                return True
+            return False
+        def is_owner(self):
+            if self.adminstration>1:
+                return True
+            return False
+
     def fetch(id):
-        user_prepare=f"SELECT `employ_id`,`password`,`email_verified`,`organisations`,`phone_verified`,`account_created`,`sessions` FROM `users` WHERE `employ_id`='{id}' LIMIT 1;"
+        user_prepare=f"SELECT `employ_id`,`password`,`email_verified`,`organisation`,`phone_verified`,`account_created`,`sessions`,`designation`,`admin` FROM `users` WHERE `employ_id`='{id}' LIMIT 1;"
         Cursor.execute(user_prepare)
         user_attr=Cursor.fetchall()
         employee_prepare=f"SELECT `name`,`email`,`phone`,`manager`,`country`,`city`,`department` FROM `employee` WHERE `employ_id`='{id}' LIMIT 1;"
@@ -43,7 +54,7 @@ class user:
         'id':user_attr[0],
         'password':user_attr[1],
         'email_verified':user_attr[2],
-        'organisations':methods.make_list(user_attr[3]).content,
+        'organisation':user_attr[3],
         'phone_verified':user_attr[4],
         'name':employee_attr[0],
         'email':employee_attr[1],
@@ -53,7 +64,9 @@ class user:
         'city':employee_attr[5],
         'sessions':methods.make_list(user_attr[6]).content,
         'account_created':user_attr[5],
-        'department':user_attr[6]        
+        'department':user_attr[6],
+        'designation':user_attr[7],        
+        'adminstration':user_attr[8]        
         }
         return Response(100,user.userObject(data=data))
     def create(data):
@@ -64,21 +77,25 @@ class user:
             country=data['country']
             city=data['city']
             manager=data['manager']
+            organisation=data['organisation']
+            designation=data['designation']
+            admin=data['admin']
         except KeyError:
             return Response(201)
         if cache.get('email',data['email']).success:
             return Response(200,"Email in use")
         elif phone!=None and cache.get('phone',phone).success:
             return Response(200,"Phone number in use")
-        #password=methods.generateRandom(12)
-        password="12345"
+        password=methods.generateRandom(12)
         password_hash=hashing_algorithm.hash(password)
-        employ_id=methods.get_employ_id()
+        employ_id=db.get_employ_id()
         cache.set('phone',phone,employ_id)
         cache.set('email',email,employ_id)    
         prepare=f"INSERT INTO `employee` (`employ_id`,`name`,`phone`,`email`,`country`,`city`) VALUES ('{employ_id}','{name}','{phone}','{email}','{country}','{city}')"
         Cursor.execute(prepare)
         prepare=f"INSERT INTO `users` (`employ_id`,`password`,`account_created`) VALUES ('{employ_id}','{password_hash}','{datetime.datetime.utcnow()}')"
         Cursor.execute(prepare)
-
-        return Response(100,employ_id)
+        employ=user.fetch(employ_id).content
+        #verify.email.sendVerifyEmail(employ)
+        communication.email.send_password(employ.email,password)
+        return Response(100,employ)

@@ -30,10 +30,9 @@ def api_create_account():
         "manager":manager
     }
     item=user.create(data=data)
-    if item.sucess:
-        return (f"Made your account!")
-    else:
+    if not item.success:
         return item.content
+    return (f"Made your account!")
 
 @app.route("/api/login",methods=["POST"])
 def api_login():
@@ -45,9 +44,9 @@ def api_login():
         return "Email not in use"
     employ_id=employ_id.content
     employ=user.fetch(employ_id).content
-    reponse=flask.make_response(flask.redirect("/"))
-    reponse.set_cookie('session',session.set(employ).content)
-    return reponse
+    response=flask.make_response(flask.redirect("/"))
+    response.set_cookie('session',session.set(employ).content)
+    return response
 
 @app.route("/login")
 def login():
@@ -57,10 +56,30 @@ def login():
 @app.route("/")
 def home():
     session_id=flask.request.cookies.get('session')
-    employ_id=session.get(session_id).content
-    employ=user.fetch(employ_id)
+    employ=session.get(session_id)
     if not employ.success:
-        return str(employ.code) + " " + employ.content
+        return flask.render_template('not_logged.html')
     employ=employ.content
     return f"Welcome {employ.name}"
+
+@app.route("/logout")
+def logout():
+    session_id=flask.request.cookies.get('session')
+    session.remove(session_id)
+    response=flask.make_response(flask.redirect("/"))
+    response.set_cookie('session',"",expires=0)
+    return response
+@app.route('/verify_email/<verification_code>')
+def verifyEmail(verification_code):
+	user_id = cache.get('verifyEmailLink',verification_code)
+	if user_id.success and verification_code == cache.get('verifyEmail', user_id.content).content:
+		user_id = user_id.content
+		userObj = user.fetch(user_id).content
+		userObj.edit('email_verified', True)
+		cache.remove("verifyEmail", user_id)
+		cache.remove('verifyEmailLink', verification_code)
+		return "Verified!"
+	else:
+		return "Invalid or Used Verification link"
+
 app.run(debug=True)

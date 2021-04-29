@@ -14,11 +14,6 @@ class methods:
             return True
     def escape_mysql(item):
         return MySQLdb.escape_string(item)
-    def get_employ_id():
-        prepare="SELECT `employ_id` FROM `users` ORDER BY `employ_id` LIMIT 1"
-        Cursor.execute(prepare)
-        item=Cursor.fetchall()
-        return int(item[0][0])+1
     def generateRandom(n):
         return ''.join(random.choice('0123456789abcdefghijklmnopqrstuvwzyzABCDEFGHIJKLMNOPQRSTUVWXYZ') for _ in range(n))
     def make_list(item):
