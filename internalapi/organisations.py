@@ -54,7 +54,7 @@ class organisations:
         "phone":phone,
         "city":address,
         "country":country,
-        "manager":"NULL",
+        "manager":employ_id,
         "organisation":id,
         "designation":designation,
         "admin":2,

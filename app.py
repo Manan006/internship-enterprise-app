@@ -13,24 +13,35 @@ app = flask.Flask(__name__)
 def signup():
     return flask.render_template("create_org.html")
 
-@app.route("/api/create_account",methods=["POST"])
+@app.route("/add_employ")
+def add_employ():
+    return flask.render_template("create_account.html")
+
+@app.route("/api/add_employ",methods=["POST"])
 def api_create_account():
     form=flask.request.form
     name=form['name']
     email=form['email']
-    phone=form['phone']
-    city=form['city']
     country=form['country']
+    city=form['city']
+    phone=form['phone']
     manager=form['manager']
-    organisation=form['organisation']
     designation=form['designation']
     admin=form['admin']
-    if admin.lower.startswith('y'):
+    department=form['department']
+    employ_id=form['employ_id']
+    if admin.lower().startswith('y'):
         admin=0
     else:
         admin=1
-    department=form['department']
-    employ_id=form['employ_id']
+    session_id=flask.request.cookies.get('session')
+    employ=session.get(session_id)
+    if not employ.success:
+        return "Please login"
+    employ=employ.content
+    if not employ.admin>admin:
+        return "Only owners can add new admins and only admins can add new employs"
+    organisation=employ.organisation
     data={
         "name":name,
         "email":email,
@@ -48,6 +59,8 @@ def api_create_account():
     if not item.success:
         return item.content
     return (f"Made your account!")
+
+
 
 @app.route("/api/create_org",methods=["POST"])
 def api_create_org():

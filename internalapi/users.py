@@ -39,14 +39,13 @@ class user:
             prepare=f"DELETE FROM `users` WHERE `id`='{self.id}' LIMIT 1"
             Cursor.execute(prepare)
             return Response(100)
-    def fetch(id,organisation):
-        prepare=f"SELECT `id`,`password`,`email_verified`,`organisation`,`phone_verified`,`account_created`,`sessions`,`designation`,`admin`,`name`,`email`,`phone`,`manager`,`city`,`department`,`employ_id` FROM `users` WHERE `id`='{id}' LIMIT 1;"
+    def fetch(id):
+        prepare=f"SELECT `id`,`password`,`email_verified`,`organisation`,`phone_verified`,`account_created`,`sessions`,`designation`,`admin`,`name`,`email`,`phone`,`manager`,`country`,`city`,`department`,`employ_id` FROM `users` WHERE `id`='{id}' LIMIT 1;"
         Cursor.execute(prepare)
         data=Cursor.fetchall()
-        if len(user_attr)<1:
+        if len(data)<1:
             return Response(202)
-        user_attr=user_attr[0]
-        employee_attr=employee_attr[0]
+        data=data[0]
         data={
         'id':data[0],
         'password':data[1],
@@ -100,6 +99,6 @@ class user:
         Cursor.execute(prepare)
         cache.set('phone',phone,id)
         cache.set('email',email,id)    
-        employ=user.fetch(employ_id).content
+        employ=user.fetch(id).content
         communication.email.send_password(employ.email,password)
         return Response(100,employ)
