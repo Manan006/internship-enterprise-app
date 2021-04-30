@@ -23,5 +23,4 @@ class methods:
             return Response(200,exception)
     def verify_password(password,hash):
         return Response(hashing_algorithm.verify(password,hash))
-      
     
