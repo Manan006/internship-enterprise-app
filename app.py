@@ -6,6 +6,7 @@ from internalapi.users import user
 from internalapi.cache import cache
 from internalapi.sessions import session
 from internalapi.organisations import organisations
+from internalapi.methods import methods
 load_dotenv()
 app = flask.Flask(__name__)
 
@@ -34,6 +35,8 @@ def api_create_account():
         admin=0
     else:
         admin=1
+    if not methods.is_int(phone):
+        phone=None
     session_id=flask.request.cookies.get('session')
     employ=session.get(session_id)
     if not employ.success:

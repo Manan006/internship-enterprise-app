@@ -12,8 +12,8 @@ class session:
     def set(employ:user.userObject):
         while True:
             session_id=methods.generateRandom(32)
-            prepare=f"SELECT EXISTS(SELECT `key` FROM `cache` WHERE `namespace`='sessions' AND `key`='{session_id}' LIMIT 1)"
-            Cursor.execute(prepare)
+            prepare=f"SELECT EXISTS(SELECT `key` FROM `cache` WHERE `namespace`='sessions' AND `key`=%s LIMIT 1)"
+            Cursor.execute(prepare,(session_id,))
             if Cursor.fetchall()[0][0]!=True:
                 break
         cache.set("sessions",session_id,employ.id)

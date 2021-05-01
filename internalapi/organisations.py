@@ -13,10 +13,10 @@ class organisations:
                 self.json = data
     def fetch(id):
         if methods.is_int(id):
-            prepare=f"SELECT `name`,`phone`,`email`,`address`,`country`,`id`,`password` FROM `organisations` WHERE `id`='{id}'"            
+            prepare=f"SELECT `name`,`phone`,`email`,`address`,`country`,`id`,`password` FROM `organisations` WHERE `id`=%s"            
         else:
-            prepare=f"SELECT `name`,`phone`,`email`,`address`,`country`,`id`,`password` FROM `organisations` WHERE `name`='{id}'"            
-        Cursor.execute(prepare)
+            prepare=f"SELECT `name`,`phone`,`email`,`address`,`country`,`id`,`password` FROM `organisations` WHERE `name`=%s"            
+        Cursor.execute(prepare,(id,))
         items=Cursor.fetchall()
         if len(items)<1:
             return Response(202)
@@ -46,15 +46,16 @@ class organisations:
         id=db.get_org_id()
         password=methods.generateRandom(12)
         password_hash=hashing_algorithm.hash(password)
-        prepare=f"INSERT INTO `organisations` (`id`,`name`,`phone`,`email`,`country`,`address`,`password`) VALUES ('{id}','{name}','{phone}','{email}','{country}','{address}','{password_hash}')"
-        Cursor.execute(prepare)
+        prepare=f"""INSERT INTO `organisations` (`id`,`name`,`phone`,`email`,`country`,`address`,`password`) 
+        VALUES (%s,%s,%s,%s,%s,%s,%s)"""
+        Cursor.execute(prepare,(id,name,phone,email,country,address,password_hash))
         data={
         "name":employ_name,
         "email":email,
         "phone":phone,
         "city":address,
         "country":country,
-        "manager":employ_id,
+        "manager":None,
         "organisation":id,
         "designation":designation,
         "admin":2,

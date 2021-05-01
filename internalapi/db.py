@@ -21,8 +21,8 @@ class db:
     else:
         return 1
   def get_employ_id(org):
-    prepare=f"SELECT `employ_id` FROM `users` WHERE `organisation`='{org}' ORDER BY `employ_id` DESC LIMIT 1"
-    Cursor.execute(prepare)
+    prepare=f"SELECT `employ_id` FROM `users` WHERE `organisation`=%s ORDER BY `employ_id` DESC LIMIT 1"
+    Cursor.execute(prepare,(org.id,))
     item=Cursor.fetchall()
     if len(item)>0:
         return int(item[0][0])+1
@@ -32,7 +32,6 @@ class db:
     prepare="SELECT `id` FROM `organisations` ORDER BY `id` DESC LIMIT 1"
     Cursor.execute(prepare)
     item=Cursor.fetchall()
-    print(item)
     if len(item)>0:
         return int(item[0][0])+1
     else:

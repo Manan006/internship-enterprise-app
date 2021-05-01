@@ -20,9 +20,9 @@ class user:
             Cursor.execute(f"SELECT EXISTS(SELECT `employ_id` FROM `users` WHERE `employ_id`='{self.id}')")
             if not Cursor.fetchall()[0][0]:
                 return Response(202)
-            prepare=f"UPDATE `users` SET `{attr}`='{value}' WHERE `id`='{self.id}'"
+            prepare=f"UPDATE `users` SET `%s`=%s WHERE `id`='{self.id}'"
             try:
-                Cursor.execute(prepare)
+                Cursor.execute(prepare,(attr,value,self.id))
             except Exception as exception:
                 return Response(200,exception)
             else:
@@ -36,12 +36,12 @@ class user:
                 return True
             return False
         def delete(self):
-            prepare=f"DELETE FROM `users` WHERE `id`='{self.id}' LIMIT 1"
-            Cursor.execute(prepare)
+            prepare=f"DELETE FROM `users` WHERE `id`=%s LIMIT 1"
+            Cursor.execute(prepare,(self.id,))
             return Response(100)
     def fetch(id):
-        prepare=f"SELECT `id`,`password`,`email_verified`,`organisation`,`phone_verified`,`account_created`,`sessions`,`designation`,`admin`,`name`,`email`,`phone`,`manager`,`country`,`city`,`department`,`employ_id` FROM `users` WHERE `id`='{id}' LIMIT 1;"
-        Cursor.execute(prepare)
+        prepare=f"SELECT `id`,`password`,`email_verified`,`organisation`,`phone_verified`,`account_created`,`sessions`,`designation`,`admin`,`name`,`email`,`phone`,`manager`,`country`,`city`,`department`,`employ_id` FROM `users` WHERE `id`=%s LIMIT 1;"
+        Cursor.execute(prepare,(id,))
         data=Cursor.fetchall()
         if len(data)<1:
             return Response(202)
@@ -95,8 +95,8 @@ class user:
         employ_id=db.get_employ_id(organisation)
         prepare=f"""INSERT INTO `users` 
         (`id`,`password`,`account_created`,`organisation`,`designation`,`admin`,`employ_id`,`name`,`email`,`phone`,`department`,`manager`,`country`,`city`) 
-        VALUES ('{id}','{password_hash}','{datetime.datetime.utcnow()}','{organisation.id}','{designation}','{admin}','{employ_id}','{name}','{email}','{phone}','{department}','{manager}','{country}','{city}')"""
-        Cursor.execute(prepare)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+        Cursor.execute(prepare,(id,password_hash,datetime.datetime.utcnow(),organisation.id,designation,admin,employ_id,name,email,phone,department,manager,country,city))
         cache.set('phone',phone,id)
         cache.set('email',email,id)    
         employ=user.fetch(id).content
