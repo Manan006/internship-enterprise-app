@@ -3,7 +3,7 @@ from internalapi.cache import cache
 from internalapi.response import Response
 from internalapi.db import Cursor
 from internalapi.db import db
-from  internalapi import communication
+from internalapi import communication
 from passlib.hash import pbkdf2_sha256 as hashing_algorithm
 from internalapi.organisations import organisations
 import datetime

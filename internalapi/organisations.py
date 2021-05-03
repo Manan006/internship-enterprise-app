@@ -13,9 +13,9 @@ class organisations:
                 self.json = data
     def fetch(id):
         if methods.is_int(id):
-            prepare=f"SELECT `name`,`phone`,`email`,`address`,`country`,`id`,`password` FROM `organisations` WHERE `id`=%s"            
+            prepare=f"SELECT `name`,`phone`,`email`,`address`,`country`,`id` FROM `organisations` WHERE `id`=%s"            
         else:
-            prepare=f"SELECT `name`,`phone`,`email`,`address`,`country`,`id`,`password` FROM `organisations` WHERE `name`=%s"            
+            prepare=f"SELECT `name`,`phone`,`email`,`address`,`country`,`id` FROM `organisations` WHERE `name`=%s"            
         Cursor.execute(prepare,(id,))
         items=Cursor.fetchall()
         if len(items)<1:
@@ -44,11 +44,6 @@ class organisations:
         except KeyError:
             return Response(201)
         id=db.get_org_id()
-        password=methods.generateRandom(12)
-        password_hash=hashing_algorithm.hash(password)
-        prepare=f"""INSERT INTO `organisations` (`id`,`name`,`phone`,`email`,`country`,`address`,`password`) 
-        VALUES (%s,%s,%s,%s,%s,%s,%s)"""
-        Cursor.execute(prepare,(id,name,phone,email,country,address,password_hash))
         data={
         "name":employ_name,
         "email":email,
@@ -62,8 +57,13 @@ class organisations:
         "department":department,
         "employ_id":employ_id
         }
-        from internalapi.users import user
-        
+        from internalapi.users import user        
         item=user.create(data=data)
+        if not item.success:
+            return item
+        prepare=f"""INSERT INTO `organisations` (`id`,`name`,`phone`,`email`,`country`,`address`) 
+        VALUES (%s,%s,%s,%s,%s,%s)"""
+        Cursor.execute(prepare,(id,name,phone,email,country,address))
+
         return Response(100,organisations.fetch(id))
         

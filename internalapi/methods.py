@@ -12,8 +12,6 @@ class methods:
             return False
         else:
             return True
-    def escape_mysql(item):
-        return MySQLdb.escape_string(item)
     def generateRandom(n):
         return ''.join(random.choice('0123456789abcdefghijklmnopqrstuvwzyzABCDEFGHIJKLMNOPQRSTUVWXYZ') for _ in range(n))
     def make_list(item):
@@ -22,5 +20,5 @@ class methods:
         except Exception as exception:
             return Response(200,exception)
     def verify_password(password,hash):
-        return Response(hashing_algorithm.verify(password,hash))
+        return Response(100,hashing_algorithm.verify(password,hash))
     

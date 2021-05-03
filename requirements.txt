@@ -1,0 +1,5 @@
+flask
+mysql-connector
+python-dotenv
+passlib
+datetime

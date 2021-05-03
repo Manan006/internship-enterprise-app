@@ -8,8 +8,8 @@ class session:
         id=cache.get("sessions",id)
         if not id.success:
             return id
-        return user.fetch(id.content)
-    def set(employ:user.userObject):
+        return Response(100,user.fetch(id.content))
+    def set(employ):
         while True:
             session_id=methods.generateRandom(32)
             prepare=f"SELECT EXISTS(SELECT `key` FROM `cache` WHERE `namespace`='sessions' AND `key`=%s LIMIT 1)"
@@ -30,3 +30,4 @@ class session:
         sessions=employ.sessions
         sessions.remove(session_id)
         employ.edit(attr="sessions",value=sessions)
+        return Response(100)
