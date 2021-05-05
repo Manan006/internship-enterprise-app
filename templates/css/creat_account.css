@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+   
+}
+body{
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background: linear-gradient(135deg, #71b7e6, #9b59b6);
+     
+}
+.container{
+    max-width: 700px;
+    width: 100%;
+    background:#fff ;
+    padding: 25px 30px;
+    border-radius: 5px;
+}
+.container .title {
+    
+    font-size: 30px;
+    font-weight: 600;
+    position: relative;
+}
+
+.container .title::before{
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 30px;
+    background: linear-gradient(135deg, #71b7e6, #9b59b6); 
+}
+.container form .user_details{
+    display: flex;
+    flex-wrap: wrap;
+    
+    justify-content: space-between;
+    margin: 20px 0 12px 0;
+}
+
+form .user_details .input_box{
+    margin-bottom: 15px;
+   
+ width: calc(100% / 2 - 20px);
+
+} 
+
+.user_details .input_box .details{
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+
+
+ .user_details .input_box input{
+height: 45px;
+width: 100%;
+outline: none;
+border-radius: 5px;
+border: 1px solid #ccc;
+padding-left: 15px;
+font-size: 17px;
+
+} 
+
+.user_details .input_box input:focus,
+.user_details .input_box input:valid{
+    border-color: rgb(81, 163, 60);
+}
+
+
+ form .Button{
+    height: 45px;
+    margin: 45px 0;
+    width: 100px;
+
+}
+
+form .Button input{
+    height: 100%;
+    /* width: 100%; */
+    outline: none;
+    color: #fff;
+    border: none;
+    font-size: 19px;
+    font-weight: 500;
+    border-radius: 5px;
+    letter-spacing: 1px;
+    background:black; 
+
+    
+}
+form .Button input:hover{
+    background:green ;
+} 
+
